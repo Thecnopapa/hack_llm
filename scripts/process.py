@@ -23,8 +23,14 @@ def filter_nas(data_path):
         index+=1'''
     data = data[data["has_null"] == False]
     print(len(data))
-
     return data
+
+
+def normalise(data):
+    data["NO2"] = data["NO2"] /data["NO2"].abs().max()
+    return data
+
+
 def hour_add_0(row):
     hour = row["hour"]-1
     row["hour"] = "{}{}".format( len(str(hour)) == 1 and '0' or '', hour)
@@ -88,6 +94,7 @@ def merge_entries(data):
 
 if True:
     data = filter_nas("../data/trainData.csv")
+    data = normalise(data)
     print(data)
 
     data = format_time(data)

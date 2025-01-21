@@ -28,7 +28,7 @@ class PollutionDataset(Dataset):
         for c in cols:
             if not ("time" in c or  "Unnamed" in c):
                 ordered_cols.append(c)
-        self.df = data_frame[ordered_cols].sort_values("timestamp", ascending=False)
+        self.df = data_frame[ordered_cols].sort_values("timestamp", ascending=True)
         self.transform = transform
 
 
@@ -70,8 +70,28 @@ print(data.df)
 
 
 
-dataloader = DataLoader(data, batch_size=64, shuffle=False)
+dataloader = DataLoader(tensors, batch_size=168, shuffle=False, num_workers=0)
 
+
+def show_values_batch(sample_batched):
+    timestamps, values_batch = sample_batched['timestamp'], sample_batched['values']
+    batch_size = len(timestamps)
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    for i in range(batch_size):
+        ax.bar(int(timestamps[i]), values_batch[i])
+        plt.title('Batch from dataloader')
+    fig.show()
+
+if __name__ == '__main__':
+    for i_batch, sample_batched in enumerate(dataloader):
+        print(i_batch, sample_batched['values'].size(),
+              sample_batched['timestamp'].size())
+
+        # observe 4th batch and stop.
+        show_values_batch(sample_batched)
+        if i_batch == 3:
+            break
 
 
 
