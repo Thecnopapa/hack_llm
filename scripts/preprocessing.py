@@ -6,20 +6,20 @@ import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 import joblib
 
-data = pd.read_csv("../data/trainData.csv") #Import data
+data = pd.read_csv(r"C:\Users\claud\OneDrive\Desktop\hack_llm-main\hack_llm-main\data\trainData.csv") #Import data aqui posar el vostre relatiu
 nulls = (data.isnull().sum()) #We check if there are null values
 
 #If we have null values we can impute or delate the row
 #Since for the temp models we need complete sequencies we will be imputing the data
 
-while nulls != 0:
+while nulls.any():
     data['NO2'] = data['NO2'].interpolate()
     nulls = (data.isnull().sum())
 
 #We will take a look to ensure that the data is fully in order
 #Since temp models like LSTM need the data in the correct order to find sequencial patrons
 
-data = data.sort_values(by=['date','station','hour'])
+data = data.sort_values(by=['data','nom_estacio','hour'])
 print(data.head()) #Used for debbuging, made to DELETE later
 
 #This part of the code is used to transform the data in sequences of 168 hours (1 week) and then
