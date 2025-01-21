@@ -2,12 +2,11 @@ import os
 
 import torch
 import pandas as pd
+import numpy as np
 
 
-data_path = "../data/trainData.cs"
+data_path = "../data/trainData.csv"
 
-
-data = pd.read_csv(data_path)
 
 
 def predict():
