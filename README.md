@@ -1,3 +1,4 @@
 # hack_llm
 
-clau - Preprocessament
+Preprocessament - per revisar
+Desenvolupament del model - Comença clàudia
