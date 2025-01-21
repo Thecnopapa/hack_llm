@@ -6,7 +6,7 @@ import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 import joblib
 
-data = pd.read_csv("../data/trainData.csvData.csv") #Import data
+data = pd.read_csv("../data/trainData.csv") #Import data
 nulls = (data.isnull().sum()) #We check if there are null values
 
 #If we have null values we can impute or delate the row
