@@ -36,13 +36,13 @@ def format_time(data):
     data["time"] = data.data + "T" + data.hour + ":00:00"
     return data
 
-def calculate_timestamp(data, time= origin):
-    time = datetime.fromisoformat(time)
-    data["timestamp"] = data["time"].apply(lambda x: (time-datetime.fromisoformat(x)).total_seconds() / 3600)
+def calculate_timestamp(data):
+    #time = datetime.fromisoformat(time)
+    data["timestamp"] = data["time"].apply(lambda x: get_total_hours(x))
     return data
 
 def get_total_hours(timestamp):
-    return (origin_datetime-datetime.fromisoformat(timestamp)).total_seconds() / 3600
+    return (datetime.fromisoformat(timestamp)-origin_datetime).total_seconds() / 3600
 
 def get_window(data, time):
     hours = get_total_hours(time)
@@ -57,26 +57,36 @@ def get_window(data, time):
 
 
 def merge_entries(data):
-    unique_stations = data["nom_estacio"].unique()
+    unique_stations = sorted(data["nom_estacio"].unique())
+    #print(unique_stations)
     number_of_stations = len(unique_stations)
-
-    merged = pd.DataFrame(columns=["time", "values"])
+    columns = ["time"]
+    for station in unique_stations:
+        columns.append(station)
+    merged = pd.DataFrame(columns=columns)
     unique_hours = data["time"].unique()
     progress = ProgressBar(len(unique_hours))
     for time in unique_hours:
         subset = data[data["time"] == time]
         if len(subset) == number_of_stations:
-            subset = subset.sort_values(by="nom_estacio", ascending=False)
-            #merged.loc[len(merged)] = time , subset["NO2"].values
-            new_row = pd.DataFrame({"time": [time], "values": [subset["NO2"].values]})
+            subset = subset.sort_values(by="nom_estacio", ascending=True)
+            #print(subset)
+            row_list = [time] + list(subset["NO2"].values)
+            #print(row_list)
+            for i in range(len(row_list)):
+                row_list[i] = [row_list[i]]
+            row_dict = dict(zip(columns, row_list))
+            #print(row_dict)
+            new_row = pd.DataFrame(row_dict)
+            #print(new_row)
             merged = pd.concat([merged, new_row], ignore_index=True)
-            print(merged.loc[len(merged)-1].values)
+            #print(merged.loc[len(merged)-1].values)
         progress.add()
     return merged
 
 
 
-if False:
+if True:
     data = filter_nas("../data/trainData.csv")
     print(data)
 
@@ -87,7 +97,7 @@ if False:
     print(data)
     data.to_csv("../data/mergedData.csv")
 
-data = read_csv("../data/mergedData.csv")
+data = pd.read_csv("../data/mergedData.csv", index_col=0)
 data = calculate_timestamp(data)
 print(data)
 

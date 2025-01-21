@@ -12,7 +12,7 @@ data_path = "../data/trainData.csv"
 
 def predict(windowToPredict):
     data = format_time(windowToPredict)
-
+    print(data)
 
 
     return
