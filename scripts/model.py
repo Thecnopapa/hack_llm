@@ -33,6 +33,9 @@ class TinyModel(torch.nn.Module):
 
 # For testing:
 if __name__ == '__main__':
+    loss_fn = torch.nn.CrossEntropyLoss()
+    print(loss_fn)
+    quit()
     model = TinyModel()
     for param in model.parameters():
         print(param)

@@ -30,7 +30,7 @@ def hours_to_datetime(hours):
 
 class PollutionDataset(Dataset):
 
-    def __init__(self, data_frame, transform=None):
+    def __init__(self, data_frame, transform=None, is_test=False):
         cols = list(data_frame.columns)
         ordered_cols = ["timestamp"]
         for c in cols:
@@ -38,7 +38,7 @@ class PollutionDataset(Dataset):
                 ordered_cols.append(c)
         self.df = data_frame[ordered_cols].sort_values("timestamp", ascending=True)
         self.transform = transform
-
+        self.is_test = is_test
 
     def __len__(self):
         return len(self.df)
@@ -52,7 +52,10 @@ class PollutionDataset(Dataset):
         #time = np.array(list(map(float, time)))
         values = self.df.iloc[idx,1:]
         values = np.array(values, dtype=float)
-        sample = {'timestamp': timestamp, 'values': values.reshape(1,5), "time":time.reshape(1,9)} #.reshape(-1)
+        if not self.is_test:
+            sample = {'timestamp': timestamp, 'values': values.reshape(1,5), "time":time.reshape(1,9)} #.reshape(-1)
+        else:
+            sample = {'timestamp': timestamp, 'values': values.reshape(1,1), "time":time.reshape(1,9)} #.reshape(-1)
         if self.transform:
             sample = self.transform(sample)
         return sample

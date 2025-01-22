@@ -12,7 +12,8 @@ from torch.utils.data import DataLoader
 from process import process_data
 from dataload import PollutionDataset, ToTensor
 from model import TinyModel
-from train import trainModel
+from train import trainModel, test
+
 
 ##### Our solution #####
 
@@ -34,7 +35,6 @@ def predict(windowData, station = "average"):
         if trainDataLoader is None:
             if trainTensors is None:
                 if trainData is None:
-
                     if not "trainData_processed.csv" in os.listdir("../data"):
                         # Process data if not already processed (Slow!)
                         print("Processed training data not found. Processing training data")
@@ -43,7 +43,7 @@ def predict(windowData, station = "average"):
                         # Load processed data if found
                         print("Loading processed training data")
                         trainData = pd.read_csv("../data/trainData_processed.csv")
-                    print("Training data processed and laoded")
+                    print("Training data processed and loaded")
                 else:
                     print("Processed training data already loaded")
 
@@ -71,8 +71,16 @@ def predict(windowData, station = "average"):
 
     # Process test dataframe (aka windowToPredict)
     print("Processing window data")
-    windowData = process_data(windowData, name="windowData")
+    windowData, stations = process_data(windowData, name="windowData")
     print(windowData)
+    print("Creating window tensors")
+    windowTensors = PollutionDataset(windowData, transform=ToTensor(), is_test=True)
+    print(windowTensors)
+    print("Creating window dataloader")
+    windowDataLoader = DataLoader(windowTensors, batch_size=1, shuffle=False, num_workers=0)
+    print(windowDataLoader)
+
+    test(windowDataLoader, model)
 
     return
 
