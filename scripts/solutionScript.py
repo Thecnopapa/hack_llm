@@ -11,7 +11,7 @@ from torch.utils.data import DataLoader
 # Other scripts
 from process import process_data
 from dataload import PollutionDataset, ToTensor
-from model import TinyModel
+from model import TinyModel, MeanModel
 from train import trainModel, test
 
 
@@ -25,7 +25,7 @@ trainDataLoader = None
 model = None
 
 # Our predict function
-def predict(windowData, station = "average"):
+def predict(windowData, station = "average", output_dim=1):
     global trainData
     global trainTensors
     global trainDataLoader
@@ -48,7 +48,7 @@ def predict(windowData, station = "average"):
                     print("Processed training data already loaded")
 
                 # Make tensors from training data when necessary
-                trainTensors = PollutionDataset(trainData, transform=ToTensor())
+                trainTensors = PollutionDataset(trainData, transform=ToTensor(), output_dim=output_dim)
             else:
                 print("Tensors already loaded")
 
@@ -59,8 +59,8 @@ def predict(windowData, station = "average"):
 
         if not os.path.exists("../model/model.pth"):
             print("Model file not found. Training new model")
-            model = TinyModel()
-            model = trainModel(trainDataLoader, model)
+            model = TinyModel(output_dim)
+            model= trainModel(trainDataLoader, model)
         else:
             print("Trained model loaded from file")
             model = torch.load("../model/model.pth")
@@ -74,7 +74,7 @@ def predict(windowData, station = "average"):
     windowData, stations = process_data(windowData, name="windowData")
     print(windowData)
     print("Creating window tensors")
-    windowTensors = PollutionDataset(windowData, transform=ToTensor(), is_test=True)
+    windowTensors = PollutionDataset(windowData, transform=ToTensor(), is_test=True, output_dim=output_dim)
     print(windowTensors)
     print("Creating window dataloader")
     windowDataLoader = DataLoader(windowTensors, batch_size=1, shuffle=False, num_workers=0)

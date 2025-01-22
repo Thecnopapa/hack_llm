@@ -100,12 +100,29 @@ def merge_entries(data, is_one_station = True):
     else:
         return merged, unique_stations
 
+def df_by_station(data):
+    stations = data["nom_estacio"].unique()
+    dataframes = []
+    for station in stations:
+        station_data = data[data["nom_estacio"] == station]
+        station_path = "../data/stations/station_{}.csv".format(station)
+        station_data.to_csv(station_path, index=False)
+
+
+
+
 
 # Process the data to a useful format either from a pd.Dataframe object or from a path
 def process_data(data, name = "d", as_path=False):
     if as_path:
         data = pd.read_csv(data, na_values=np.nan, dtype={"NO2": float, "data": str})
     data = filter_nas(data)
+    df_by_station(data)
+
+    for station_df in os.listdir("../data/stations"):
+
+
+
     data = normalise(data)
     data = format_time(data)
     data, stations = merge_entries(data)

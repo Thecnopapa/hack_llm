@@ -17,8 +17,8 @@ def test(dataloader, model):
     model.eval()
     test_loss, correct = 0, 0
     with torch.no_grad():
-        for X, y in dataloader:
-            X, y = X, y
+        for sample in dataloader:
+            X, y = sample["time"], sample["values"]
             pred = model(X)
             test_loss += loss_fn(pred, y).item()
             correct += (pred.argmax(1) == y).type(torch.float).sum().item()
@@ -78,7 +78,7 @@ def trainModel(dataloader, model):
     torch.save(model, model_path)
     torch.save(model.state_dict(), state_path)
     print("Saved PyTorch Model State {}".format(model_path))
-    return model, loss_fn
+    return model
 
 
 # For testing:
