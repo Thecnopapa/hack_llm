@@ -6,7 +6,7 @@ import pandas as pd
 from utilities import  *
 
 
-from dataload import tensors as dataTensors
+from dataload import tensors as trainDataset
 from dataload import dataloader
 from dataload import data
 from model import model
@@ -56,7 +56,7 @@ def train(dataloader, model, loss_fn, optimizer):
         if batch % 100 == 0:
             loss, current = loss.item(), (batch + 1) * len(X)
             #print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
-    progress.add()
+        progress.add()
 epochs = 5
 for t in range(epochs):
     print(f"Epoch {t+1}\n-------------------------------")
