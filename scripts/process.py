@@ -92,7 +92,7 @@ def merge_entries(data):
 
 
 
-if True:
+if __name__ == '__main__':
     data = filter_nas("../data/trainData.csv")
     data = normalise(data)
     print(data)

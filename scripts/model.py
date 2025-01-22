@@ -35,22 +35,25 @@ class TinyModel(torch.nn.Module):
         self.softmax = torch.nn.Softmax()
 
     def forward(self, x):
-        print("input:", x)
+        #print("input:", x)
         x = self.linear1(x)
         x = self.activation(x)
         x = self.linear2(x)
         x = self.softmax(x)
-        print("output:", x)
+        #print("output:", x)
         return x
 
 
 
 model = TinyModel()
+if __name__ == '__main__':
+    x = torch.rand(5,1)
+    print("input:", x)
+    print("output:", model(x))
+    print('The model:')
+    print(model)
 
-print('The model:')
-print(model)
-
-print('\n\nModel params:')
-for param in model.parameters():
-    print(param)
+    print('\n\nModel params:')
+    for param in model.parameters():
+        print(param)
 

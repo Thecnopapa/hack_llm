@@ -8,8 +8,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms, utils
-
-
+from process import origin_datetime
+from datetime import datetime, timedelta
 # Ignore warnings
 import warnings
 warnings.filterwarnings("ignore")
@@ -18,6 +18,10 @@ warnings.filterwarnings("ignore")
 
 
 data_frame = pd.read_csv('../data/processedData.csv', index_col=False)
+
+
+def hours_to_datetime(hours):
+    return origin_datetime + timedelta(hours=hours)
 
 
 class PollutionDataset(Dataset):
@@ -39,9 +43,11 @@ class PollutionDataset(Dataset):
         if torch.is_tensor(idx):
             idx = idx.tolist()
         timestamp = self.df.iloc[idx,0]
+        time = hours_to_datetime(timestamp)
+        time = np.array(time.timetuple())
         values = self.df.iloc[idx,1:]
         values = np.array(values, dtype=float)
-        sample = {'timestamp': timestamp, 'values': values} #.reshape(-1)
+        sample = {'timestamp': timestamp, 'values': values, "time":time} #.reshape(-1)
         if self.transform:
             sample = self.transform(sample)
         return sample
@@ -50,15 +56,15 @@ class PollutionDataset(Dataset):
         fig = plt.figure()
         ax = fig.add_subplot(1, 1, 1)
         for i, sample in enumerate(self):
-            print(i, sample["timestamp"], sample["values"])
+            #print(i, sample["timestamp"], sample["values"])
             #plot_values(, , ax)
             ax.bar(int(sample["timestamp"]), numpy.mean(sample["values"]))
         plt.show()
 
 class ToTensor(object):
     def __call__(self, sample):
-        timestamp, values = sample['timestamp'], sample['values']
-        return {'timestamp': timestamp, 'values': torch.from_numpy(values)}
+        timestamp, values, time = sample['timestamp'], sample['values'], sample['time']
+        return {'timestamp': timestamp, 'values': torch.from_numpy(values), "time": torch.from_numpy(time)}
 
 
 data = PollutionDataset(data_frame)
@@ -74,7 +80,7 @@ dataloader = DataLoader(tensors, batch_size=168, shuffle=False, num_workers=0)
 
 
 def show_values_batch(sample_batched):
-    timestamps, values_batch = sample_batched['timestamp'], sample_batched['values']
+    time, timestamps, values_batch = sample_batched['time'], sample_batched["timestamp"], sample_batched['values']
     batch_size = len(timestamps)
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
@@ -85,8 +91,8 @@ def show_values_batch(sample_batched):
 
 if __name__ == '__main__':
     for i_batch, sample_batched in enumerate(dataloader):
-        print(i_batch, sample_batched['values'].size(),
-              sample_batched['timestamp'].size())
+        print(i_batch, sample_batched['time'].size(),
+              sample_batched['values'].size())
 
         # observe 4th batch and stop.
         show_values_batch(sample_batched)
