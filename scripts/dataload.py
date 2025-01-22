@@ -44,10 +44,11 @@ class PollutionDataset(Dataset):
             idx = idx.tolist()
         timestamp = self.df.iloc[idx,0]
         time = hours_to_datetime(timestamp)
-        time = np.array(time.timetuple())
+        time = np.array(time.timetuple(), dtype=np.float32)
+        #time = np.array(list(map(float, time)))
         values = self.df.iloc[idx,1:]
         values = np.array(values, dtype=float)
-        sample = {'timestamp': timestamp, 'values': values, "time":time} #.reshape(-1)
+        sample = {'timestamp': timestamp, 'values': values.reshape(1,5), "time":time.reshape(1,9)} #.reshape(-1)
         if self.transform:
             sample = self.transform(sample)
         return sample
@@ -73,11 +74,12 @@ tensors = PollutionDataset(data_frame, transform=ToTensor())
 # data.plot_values()
 print(data.df)
 
+#print(tensors[124])
 
 
+dataloader = DataLoader(tensors, batch_size=1, shuffle=False, num_workers=0)
 
-dataloader = DataLoader(tensors, batch_size=168, shuffle=False, num_workers=0)
-
+print(len(dataloader))
 
 def show_values_batch(sample_batched):
     time, timestamps, values_batch = sample_batched['time'], sample_batched["timestamp"], sample_batched['values']
@@ -95,7 +97,7 @@ if __name__ == '__main__':
               sample_batched['values'].size())
 
         # observe 4th batch and stop.
-        show_values_batch(sample_batched)
+        #show_values_batch(sample_batched)
         if i_batch == 3:
             break
 

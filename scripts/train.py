@@ -3,7 +3,7 @@ import os
 import torch
 import pandas as pd
 
-
+from utilities import  *
 
 
 from dataload import tensors as dataTensors
@@ -40,6 +40,7 @@ for sample in dataloader:
 def train(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset)
     model.train()
+    progress = ProgressBar(len(dataloader))
     for batch, sample in enumerate(dataloader):
         X, y = sample["time"], sample["values"]
 
@@ -54,8 +55,8 @@ def train(dataloader, model, loss_fn, optimizer):
 
         if batch % 100 == 0:
             loss, current = loss.item(), (batch + 1) * len(X)
-            print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
-
+            #print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+    progress.add()
 epochs = 5
 for t in range(epochs):
     print(f"Epoch {t+1}\n-------------------------------")

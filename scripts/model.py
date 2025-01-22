@@ -29,9 +29,9 @@ class TinyModel(torch.nn.Module):
     def __init__(self):
         super(TinyModel, self).__init__()
 
-        self.linear1 = torch.nn.Linear(5, 100)
+        self.linear1 = torch.nn.Linear(9, 100)
         self.activation = torch.nn.ReLU()
-        self.linear2 = torch.nn.Linear(100, 1)
+        self.linear2 = torch.nn.Linear(100, 5)
         self.softmax = torch.nn.Softmax()
 
     def forward(self, x):
@@ -47,13 +47,13 @@ class TinyModel(torch.nn.Module):
 
 model = TinyModel()
 if __name__ == '__main__':
-    x = torch.rand(5,1)
+    x = torch.rand(1,9)
     print("input:", x)
     print("output:", model(x))
     print('The model:')
-    print(model)
+    #print(model)
 
     print('\n\nModel params:')
-    for param in model.parameters():
-        print(param)
+    #for param in model.parameters():
+        #print(param)
 
