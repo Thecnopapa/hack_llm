@@ -41,7 +41,7 @@ class PollutionDataset(Dataset):
         timestamp = self.df.iloc[idx,0]
         values = self.df.iloc[idx,1:]
         values = np.array(values, dtype=float)
-        sample = {'timestamp': timestamp, 'values': values}
+        sample = {'timestamp': timestamp, 'values': values} #.reshape(-1)
         if self.transform:
             sample = self.transform(sample)
         return sample
