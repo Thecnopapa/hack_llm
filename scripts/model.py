@@ -1,29 +1,15 @@
+# Essential
 
-
-import torch
-from dataload import tensors as dataTensors
-
-
-print(dataTensors)
-
-'''lin = torch.nn.Linear(5, 15)
-print(dataTensors[1233]["values"].shape)
-x = torch.rand(5,1)
-print('Input:')
-print(x)
-
-print('\n\nWeight and Bias parameters:')
-for param in lin.parameters():
-    print(param)
-
-y = lin(x)
-print('\n\nOutput:')
-print(y)
-'''
-
-print("########################################################")
+# Pytorch-related
 import torch
 
+
+
+##### Our model #####
+
+
+
+# Class with the model used
 class TinyModel(torch.nn.Module):
 
     def __init__(self):
@@ -45,8 +31,13 @@ class TinyModel(torch.nn.Module):
 
 
 
-model = TinyModel()
+
+
+
+
+# For testing:
 if __name__ == '__main__':
+    model = TinyModel()
     x = torch.rand(1,9)
     print("input:", x)
     print("output:", model(x))

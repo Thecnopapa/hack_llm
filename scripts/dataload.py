@@ -1,23 +1,27 @@
+# Essentials
 import os
-
-import numpy.ma.extras
-import torch
 import pandas as pd
-#from skimage import io, transform
 import numpy as np
+from datetime import datetime, timedelta
+
+# Plotting
 import matplotlib.pyplot as plt
+
+# Pytorch-related
+import torch
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms, utils
+
+# Other scripts
 from process import origin_datetime
-from datetime import datetime, timedelta
-# Ignore warnings
+
+# Ignore warnings (idk why)
 import warnings
 warnings.filterwarnings("ignore")
 
-#plt.ion()   # interactive mode
 
 
-data_frame = pd.read_csv('../data/processedData.csv', index_col=False)
+##### pd.DataFrame to torch.Dataset #####
 
 
 def hours_to_datetime(hours):
@@ -68,6 +72,8 @@ class ToTensor(object):
         return {'timestamp': timestamp, 'values': torch.from_numpy(values), "time": torch.from_numpy(time)}
 
 
+data_frame = pd.read_csv('../data/processedData.csv', index_col=False)
+
 data = PollutionDataset(data_frame)
 tensors = PollutionDataset(data_frame, transform=ToTensor())
 
@@ -93,6 +99,11 @@ def show_values_batch(sample_batched):
         plt.title('Batch from dataloader')
     fig.show()
 
+
+
+
+
+# For testing:
 if __name__ == '__main__':
     for i_batch, sample_batched in enumerate(dataloader):
         print(i_batch, sample_batched['time'].size(),

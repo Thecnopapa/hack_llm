@@ -1,13 +1,21 @@
+# Essential
 import os
-
-import torch
 import pandas as pd
 import numpy as np
 from datetime import datetime
+
+# Other scripts
 from utilities import *
 
+
+
+##### .csv to pd.DataFrame #####
+
+
+# Define time origin, used to measure time between entries
 origin = "1970-01-01T00:00:00"
 origin_datetime = datetime.fromisoformat(origin)
+
 
 # Remove rows with missing values
 def filter_nas(data):
@@ -82,7 +90,7 @@ def merge_entries(data):
             new_row = pd.DataFrame(row_dict)
             merged = pd.concat([merged, new_row], ignore_index=True)
         progress.add()
-    return merged
+    return merged, unique_stations
 
 
 # Process the data to a useful format either from a pd.Dataframe object or from a path
@@ -92,13 +100,13 @@ def process_data(data, name = "d", as_path=False):
     data = filter_nas(data)
     data = normalise(data)
     data = format_time(data)
-    data = merge_entries(data)
+    data, stations = merge_entries(data)
     data = calculate_timestamp(data)
     data.to_csv("../data/{}_processed.csv".format(name), index=False)
-    return data
+    return data, stations
 
 
-
+# For testing:
 if __name__ == '__main__':
     data = filter_nas("../data/trainData.csv")
     data = normalise(data)
@@ -107,17 +115,15 @@ if __name__ == '__main__':
     data = format_time(data)
     print(data)
 
-    data = merge_entries(data)
+    data, stations = merge_entries(data)
     print(data)
     data.to_csv("../data/mergedData.csv")
 
-data = pd.read_csv("../data/mergedData.csv", index_col=0)
-data = calculate_timestamp(data)
-print(data)
+    data = pd.read_csv("../data/mergedData.csv", index_col=0)
+    data = calculate_timestamp(data)
+    print(data)
 
-data.to_csv("../data/processedData.csv")
-
-
+    data.to_csv("../data/processedData.csv")
 
 
 
@@ -127,10 +133,12 @@ data.to_csv("../data/processedData.csv")
 
 
 
-example_week, example_day= get_window(data, "2017-06-03T00:00:00")
-example_week.to_csv("../data/exampleWeek.csv")
-example_day.to_csv("../data/exampleDay.csv")
-print(example_week)
-print(example_day)
+
+
+    example_week, example_day= get_window(data, "2017-06-03T00:00:00")
+    example_week.to_csv("../data/exampleWeek.csv")
+    example_day.to_csv("../data/exampleDay.csv")
+    print(example_week)
+    print(example_day)
 
 
