@@ -11,10 +11,6 @@ from utilities import  *
 
 
 
-
-
-
-
 def train(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset)
     model.train()
@@ -56,7 +52,11 @@ def trainModel(dataloader, model):
         print(f"Epoch {t + 1}\n-------------------------------")
         train(dataloader, model, loss_fn, optimizer)
 
-
+    print("Saving trained model")
+    model_path = os.path.join("../model/model.pth")
+    os.makedirs(os.path.dirname(model_path), exist_ok=True)
+    torch.save(model.state_dict(), model_path)
+    print("Saved PyTorch Model State {}".format(model_path))
 
 
 
