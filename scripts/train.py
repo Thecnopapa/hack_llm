@@ -54,10 +54,12 @@ def trainModel(dataloader, model):
 
     print("Saving trained model")
     model_path = os.path.join("../model/model.pth")
+    state_path = os.path.join("../model/state.pth")
     os.makedirs(os.path.dirname(model_path), exist_ok=True)
-    torch.save(model.state_dict(), model_path)
+    torch.save(model, model_path)
+    torch.save(model.state_dict(), state_path)
     print("Saved PyTorch Model State {}".format(model_path))
-
+    return model
 
 
 # For testing:

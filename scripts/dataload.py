@@ -72,22 +72,7 @@ class ToTensor(object):
         return {'timestamp': timestamp, 'values': torch.from_numpy(values), "time": torch.from_numpy(time)}
 
 
-data_frame = pd.read_csv('../data/processedData.csv', index_col=False)
 
-data = PollutionDataset(data_frame)
-tensors = PollutionDataset(data_frame, transform=ToTensor())
-
-testTensors = PollutionDataset(data_frame, transform=ToTensor())
-
-# data.plot_values()
-print(data.df)
-
-print(tensors[124])
-
-
-dataloader = DataLoader(tensors, batch_size=1, shuffle=False, num_workers=0)
-
-print(len(dataloader))
 
 def show_values_batch(sample_batched):
     time, timestamps, values_batch = sample_batched['time'], sample_batched["timestamp"], sample_batched['values']
@@ -105,6 +90,29 @@ def show_values_batch(sample_batched):
 
 # For testing:
 if __name__ == '__main__':
+
+    data_frame = pd.read_csv('../data/processedData.csv', index_col=False)
+
+    data = PollutionDataset(data_frame)
+    tensors = PollutionDataset(data_frame, transform=ToTensor())
+
+    testTensors = PollutionDataset(data_frame, transform=ToTensor())
+
+    # data.plot_values()
+    print(data.df)
+
+    print(tensors[124])
+
+    dataloader = DataLoader(tensors, batch_size=1, shuffle=False, num_workers=0)
+
+    print(len(dataloader))
+
+
+
+
+
+
+
     for i_batch, sample_batched in enumerate(dataloader):
         print(i_batch, sample_batched['time'].size(),
               sample_batched['values'].size())

@@ -31,19 +31,18 @@ class TinyModel(torch.nn.Module):
 
 
 
-
-
-
 # For testing:
 if __name__ == '__main__':
     model = TinyModel()
+    for param in model.parameters():
+        print(param)
     x = torch.rand(1,9)
     print("input:", x)
     print("output:", model(x))
     print('The model:')
-    #print(model)
+    print(model)
+    print(model.parameters())
 
     print('\n\nModel params:')
-    #for param in model.parameters():
-        #print(param)
+
 
