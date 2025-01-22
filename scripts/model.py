@@ -8,7 +8,6 @@ import torch
 ##### Our model #####
 
 
-
 # Class with the model used
 class TinyModel(torch.nn.Module):
 

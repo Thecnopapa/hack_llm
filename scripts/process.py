@@ -70,19 +70,24 @@ def get_window(data, time):
 
 
 # Transform the dataframe so that the data is grouped entry (in time) / Very slow
-def merge_entries(data):
-    unique_stations = sorted(data["nom_estacio"].unique())
-    number_of_stations = len(unique_stations)
+def merge_entries(data, is_one_station = True):
     columns = ["time"]
-    for station in unique_stations:
-        columns.append(station)
+    if "nom_estacion" in data.columns:
+        unique_stations = sorted(data["nom_estacio"].unique())
+        number_of_stations = len(unique_stations)
+        for station in unique_stations:
+            columns.append(station)
+        is_one_station = False
+    else:
+        columns.append("NO2")
     merged = pd.DataFrame(columns=columns)
     unique_hours = data["time"].unique()
     progress = ProgressBar(len(unique_hours))
     for time in unique_hours:
         subset = data[data["time"] == time]
-        if len(subset) == number_of_stations:
-            subset = subset.sort_values(by="nom_estacio", ascending=True)
+        if len(subset) == len(columns)-1:
+            if len(subset) > 1:
+                subset = subset.sort_values(by="nom_estacio", ascending=True)
             row_list = [time] + list(subset["NO2"].values)
             for i in range(len(row_list)):
                 row_list[i] = [row_list[i]]
@@ -90,7 +95,10 @@ def merge_entries(data):
             new_row = pd.DataFrame(row_dict)
             merged = pd.concat([merged, new_row], ignore_index=True)
         progress.add()
-    return merged, unique_stations
+    if is_one_station:
+        return merged, ["NO2"]
+    else:
+        return merged, unique_stations
 
 
 # Process the data to a useful format either from a pd.Dataframe object or from a path
@@ -124,12 +132,6 @@ if __name__ == '__main__':
     print(data)
 
     data.to_csv("../data/processedData.csv")
-
-
-
-
-
-
 
 
 

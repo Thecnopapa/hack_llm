@@ -15,7 +15,7 @@ from process import process_data
 trainData = None
 
 
-#
+# Our predict function
 def predict(windowData, station = "average"):
     # Load or create processed training data (slow) / First-run only & only when necessary
     global trainData

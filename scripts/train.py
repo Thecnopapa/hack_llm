@@ -1,40 +1,18 @@
+# Essential
 import os
-
-import torch
 import pandas as pd
 
+# Pytorch
+import torch
+
+# Other scripts
 from utilities import  *
 
 
-from dataload import tensors as trainDataset
-from dataload import dataloader
-from dataload import data
-from model import model
-
-
-from torch import nn
 
 
 
-loss_fn = nn.CrossEntropyLoss()
-optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)
 
-device = (
-    "cuda"
-    if torch.cuda.is_available()
-    else "mps"
-    if torch.backends.mps.is_available()
-    else "cpu"
-)
-
-for sample in dataloader:
-    timestamp = sample["timestamp"]
-    values = sample["values"]
-    time = sample["time"]
-    print("Timestamp:", timestamp)
-    print("Time:", time, type(time))
-    print("Values:", values)
-    break
 
 
 def train(dataloader, model, loss_fn, optimizer):
@@ -57,7 +35,35 @@ def train(dataloader, model, loss_fn, optimizer):
             loss, current = loss.item(), (batch + 1) * len(X)
             #print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
         progress.add()
-epochs = 5
-for t in range(epochs):
-    print(f"Epoch {t+1}\n-------------------------------")
-    train(dataloader, model, loss_fn, optimizer)
+
+
+
+def trainModel(dataloader, model):
+    loss_fn = torch.nn.CrossEntropyLoss()
+    optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)
+
+    for sample in dataloader:
+        timestamp = sample["timestamp"]
+        values = sample["values"]
+        time = sample["time"]
+        print("Timestamp:", timestamp)
+        print("Time:", time, type(time))
+        print("Values:", values)
+        break
+
+    epochs = 5
+    for t in range(epochs):
+        print(f"Epoch {t + 1}\n-------------------------------")
+        train(dataloader, model, loss_fn, optimizer)
+
+
+
+
+
+# For testing:
+if __name__ == "__main__":
+
+    from dataload import dataloader as dataloaderTrain
+    from model import model
+
+    trainModel(dataloaderTrain, model)
