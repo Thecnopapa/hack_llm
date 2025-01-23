@@ -27,7 +27,7 @@ warnings.filterwarnings("ignore")
 def hours_to_datetime(hours):
     return origin_datetime + timedelta(hours=hours)
 
-
+# Deprecated
 class PollutionDataset(Dataset):
 
     def __init__(self, data_frame, transform=None, is_test=False, output_dim = 1):
@@ -70,27 +70,13 @@ class PollutionDataset(Dataset):
             ax.bar(int(sample["timestamp"]), numpy.mean(sample["values"]))
         plt.show()
 
+
+# List to tensors
 class ToTensor(object):
     def __call__(self, array):
         return torch.from_numpy(array).to(torch.float)
-        #for key in sample.keys():
-        #    sample[key] = torch.from_numpy(sample[key])
-        #return sample
-        #timestamp, values, time = sample['timestamp'], sample['values'], sample['time']
-        #return {'timestamp': timestamp, 'values': torch.from_numpy(values), "time": torch.from_numpy(time)}
 
 
-
-
-def show_values_batch(sample_batched):
-    time, timestamps, values_batch = sample_batched['time'], sample_batched["timestamp"], sample_batched['values']
-    batch_size = len(timestamps)
-    fig = plt.figure()
-    ax = fig.add_subplot(1, 1, 1)
-    for i in range(batch_size):
-        ax.bar(int(timestamps[i]), values_batch[i])
-        plt.title('Batch from dataloader')
-    fig.show()
 
 
 # Return 2 datasets:  1 week before a defined date/time & 24h after the same date/time
@@ -105,7 +91,7 @@ def get_window(data, hours):
     day = day[day["timestamp"] < one_day_more]
     return  week, day
 
-
+# Transform 1 week data into a tensor
 def week_to_X(week, threshold, transform = None):
     #timestamps = np.array(threshold - week["timestamp"].values)
     values = np.array(week["NO2"].values)
@@ -115,6 +101,7 @@ def week_to_X(week, threshold, transform = None):
         array = transform(array)
     return array
 
+# transform 24h data into a tensor
 def day_to_y(day, threshold, transform = None):
     #timestamps = np.array(threshold + day["timestamp"].values)
     values = np.array(day["NO2"].values)
@@ -125,6 +112,7 @@ def day_to_y(day, threshold, transform = None):
     return array
 
 
+# class to load data into the model
 class customDataLoader():
     def __init__(self, df, transform=None, name="dataset", is_train = True):
         self.name = name
@@ -183,9 +171,6 @@ class customDataLoader():
 
 
 
-
-
-
 def create_dataloaders():
     print("\nCreating dataloaders...")
     dataloaders = []
@@ -201,45 +186,3 @@ if __name__ == '__main__':
 
     dataloaders = create_dataloaders()
 
-
-
-
-
-'''
-
-
-    quit()
-    data_frame = pd.read_csv('../data/processedData.csv', index_col=False)
-
-    data = PollutionDataset(data_frame)
-    tensors = PollutionDataset(data_frame, transform=ToTensor())
-
-    testTensors = PollutionDataset(data_frame, transform=ToTensor())
-
-    # data.plot_values()
-    print(data.df)
-
-    print(tensors[124])
-
-    dataloader = DataLoader(tensors, batch_size=1, shuffle=False, num_workers=0)
-
-    print(len(dataloader))
-
-
-
-
-
-
-
-    for i_batch, sample_batched in enumerate(dataloader):
-        print(i_batch, sample_batched['time'].size(),
-              sample_batched['values'].size())
-
-        # observe 4th batch and stop.
-        #show_values_batch(sample_batched)
-        if i_batch == 3:
-            break
-
-
-
-'''
