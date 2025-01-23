@@ -24,73 +24,62 @@ from train import trainTinyModel, test, save_model, load_model
 n = 0
 def predict(windowData, force_train=False, force_process=False, cheat=True):
     global n
-    print(n,"/ ", end="")
-    os.makedirs("../models", exist_ok=True)
-    if (len(os.listdir("../models")) == 0 or force_train) and not cheat:
-        process_data("../data/trainData.csv", as_path=True, force=force_process)
-        dataloaders = create_dataloaders()
-        model = TinyModel(24)
+    print(n, end="\r")
+
+    os.makedirs("../models", exist_ok=True) # Creates model folder if it does not exist
+    if (len(os.listdir("../models")) == 0 or force_train) and not cheat: # Checks whether there are any tarined models saved
+        process_data("../data/trainData.csv", as_path=True, force=force_process) # Process data for training
+        dataloaders = create_dataloaders() # Generate dataloaders for the data
+        model = TinyModel(24) # Initialise the model
         iterations = 5 # Up to 9 should be fine
-        trainTinyModel(dataloaders, model, iterations=iterations)
-    else:
-        model = load_model()
+        trainTinyModel(dataloaders, model, iterations=iterations) # Train the model
+    elif not cheat:
+        model = load_model() # If there are saved models, load the most trained one
 
 
-    model.eval()
-    #print("windowDara:",windowData)
+    # Process window data and convert to tensors
     windowData, minimum, maximum= process_window(windowData, normalise= True)
-    #print(windowData)
-    #print(minimum, maximum)
     threshold = max(windowData['timestamp'].values)-1
     window_X = week_to_X(windowData, threshold, transform=ToTensor())
-    #print("Input:")
-    #print(window_X)
-    #print(window_X.shape)
-    #print(window_X.dtype)
+
+    # Because the model does not work so far this simple prediction is left as palceholder
+    # Note: it performs poorly (RMSE 43.8 on validation data)
 
     if cheat:
-        data =  window_X.tolist()
-        #pred = np.array(pred)#.resize(7,24)
-        #pred = np.resize(pred, (7,24))
-        hours = []
-        for hour in range(24):
-            hour_data = []
-            for day in range(7):
-                index = day*24 + hour
-                hour_data.append(data[index])
-            hours.append(hour_data)
-            #print(hour_data)
-        #print(hours)
+        data =  windowData
         pred = []
-        for hour in hours:
-            pred.append(np.mean(hour))
-        #print(pred)
-        #print(len(pred))
-        #pred = [np.mean(pred)] * 24
-        #print("")
-        #print(pred)
-        #print("")
-        #quit()
+        for hour in data["hour"].unique():
+            hour_data = data[data["hour"] == hour]
+            hour_data = hour_data["NO2"].values
+            hour_average = np.mean(hour_data)
+            pred.append(hour_average)
+    # Returns the average pollution at each hour of a day
+
+    # If the model were to work we would instead predict the output
     else:
-        pred = model(window_X)
+        model.eval() # Stop the model from training
+        pred = model(window_X) # Get predictions
         print("Prediction:")
-        print(pred)
+        print(pred)# Here the output unfortunately is a nan tensor
         print(pred.shape)
 
 
-        pred = pred.tolist()
+        pred = pred.tolist() # Tensors to list
         print(pred)
         scaled_pred = []
         for p in pred:
+            # Scale it back as the output ranges 0-1
             scaled_pred.append(p* (maximum-minimum) + minimum)
         print("Rescaled:")
-        print(pred)
+        print(pred) # Just to get disappointed again
         for p in model.parameters():
-            print(p)
+            print(p) # Here we can see the model parameters are nan after training
     n += 1
     return pred
 
+
 # For testing:
+# Run this script to test a window from the validation data
 if __name__ == "__main__":
     windowData = pd.read_csv("../scripts/validationData.csv")
     predict(windowData[0:168], force_train = False, force_process=False, cheat = True)
