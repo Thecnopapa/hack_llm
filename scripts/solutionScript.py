@@ -47,7 +47,7 @@ def predict(windowData, force_train=False, force_process=False):
     print(window_X.shape)
     print(window_X.dtype)
 
-    pred = test(window_X, model)
+    pred = model(window_X)
     print("Prediction:")
     print(pred)
     print(pred.shape)

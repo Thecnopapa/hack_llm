@@ -67,9 +67,9 @@ def trainTinyModel(dataloaders, model, iterations=5):
                     optimizer.zero_grad()
                     out = model(X)
                     loss = criterion(out, y)
-                    print(out)
-                    print(y)
-                    print('loss:', loss.item())
+                    #print(out)
+                    #print(y)
+                    #print('loss:', loss.item())
                     loss.backward()
                     return loss
 
