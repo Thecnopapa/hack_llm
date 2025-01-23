@@ -38,8 +38,8 @@ def train(dataloaders, model, iterations=5):
             progress = ProgressBar(len(dataloader))
             for batch, sample in dataloader:
                 X, y = sample
-                print(X.shape)
-                print(y.shape)
+                #print(X.shape)
+                #print(y.shape)
                 # Compute prediction error
                 pred = model(X)
                 loss = loss_fn(pred, y)
@@ -52,7 +52,7 @@ def train(dataloaders, model, iterations=5):
                 progress.add()
                 if batch % 100 == 0:
                     loss, current = loss.item(), (batch + 1) * len(X)
-                    print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+                    print(f"loss: {loss:>7f}  [{current:>5d}/{len(dataloader):>5d}]")
 
 
 

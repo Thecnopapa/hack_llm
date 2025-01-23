@@ -124,7 +124,7 @@ def day_to_y(day, threshold, transform = None):
 
 
 class customDataLoader():
-    def __init__(self, df, transform=None, name="dataset"):
+    def __init__(self, df, transform=None, name="dataset", is_train = True):
         self.name = name
         print("\n",self.name, self)
         self.transform = transform

@@ -127,6 +127,22 @@ def process_data(data, name = "d", as_path=False, force= False):
             station_df.to_csv("../data/processed/{}".format(station), index=False)
     print("Processed {} stations".format(len(data.columns.unique())))
 
+
+
+# Process the data to a useful format either from a pd.Dataframe object or from a path
+def process_window(data):
+    print("\nProcessing data...")
+    os.makedirs("../data/window", exist_ok=True)
+    data.to_csv("../data/window/original.csv", index=False)
+    data = filter_nas(data)
+    data.to_csv("../data/window/window.csv", index=False)
+    data = normalise(data)
+    data = format_time(data)
+    data = calculate_timestamp(data)
+    data = data[["timestamp", "NO2", "month", "day", "hour"]]
+    data.to_csv("../data/window/processed.csv", index=False)
+    print("Processed {} stations".format(len(data.columns.unique())))
+
 # For testing:
 if __name__ == '__main__':
     process_data("../data/trainData.csv", as_path=True, force=True)
