@@ -49,8 +49,28 @@ def predict(windowData, force_train=False, force_process=False, cheat=True):
     #print(window_X.dtype)
 
     if cheat:
-        pred = window_X[:24].tolist()
+        data =  window_X.tolist()
+        #pred = np.array(pred)#.resize(7,24)
+        #pred = np.resize(pred, (7,24))
+        hours = []
+        for hour in range(24):
+            hour_data = []
+            for day in range(7):
+                index = day*24 + hour
+                hour_data.append(data[index])
+            hours.append(hour_data)
+            #print(hour_data)
+        #print(hours)
+        pred = []
+        for hour in hours:
+            pred.append(np.mean(hour))
         #print(pred)
+        #print(len(pred))
+        #pred = [np.mean(pred)] * 24
+        #print("")
+        #print(pred)
+        #print("")
+        #quit()
     else:
         pred = model(window_X)
         print("Prediction:")
