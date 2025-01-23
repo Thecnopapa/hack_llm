@@ -19,7 +19,7 @@ def save_model(model, model_path = "../models/models.pth"):
 def load_model(model_path="../models/models.pth"):
     models = os.listdir("../models")
     highest_model = (sorted(models))[-1]
-    print("Loading models:", highest_model)
+    #print("Loading models:", highest_model)
     model_path = os.path.join("../models", highest_model)
     model = torch.load(model_path)
     return model

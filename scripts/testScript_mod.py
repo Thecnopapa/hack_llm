@@ -25,9 +25,8 @@ def main():
         realValues.extend(inputData[:, 2][end : end + PREDICTION_HORIZON])
 
         predictionValues.extend(predict(windowToPredict))
-        print(realValues)
-        print(predictionValues)
-        quit()
+        #print(realValues)
+        #print(predictionValues)
         print(len(inputData) - WINDOW_SIZE - PREDICTION_HORIZON, len(realValues), len(predictionValues), end="\n")
 
     # Compute the RMSE (root mean squared error).

@@ -48,10 +48,10 @@ def hour_add_0(row):
 
 # Merge the date and hour into a single string on a new column
 def format_time(data):
-    print(data)
+    #print(data)
     data = data.apply(hour_add_0, axis=1)
     data["time"] = data.data + "T" + data.hour + ":00:00"
-    print(data)
+    #print(data)
     return data
 
 def hours_to_datetime(hours):
@@ -148,7 +148,7 @@ def process_window(array, normalise = True):
     data = pd.DataFrame(array, columns=["data", "hour", "NO2"])
     #data["hora"] = pd.to_numeric(data["hora"])
     data["NO2"] = pd.to_numeric(data["NO2"])
-    print(data.dtypes)
+    #print(data.dtypes)
 
     #print(data)
     data.to_csv("../data/window/original.csv", index=False)
