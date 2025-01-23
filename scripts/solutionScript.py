@@ -32,7 +32,7 @@ def predict(windowData, force_train=False, force_process=False):
         model = TinyModel(24)
         iterations = 1
         trainTinyModel(dataloaders, model, iterations=iterations)
-        save_model(model, path="../models/model_{}.pth".format(iterations))
+
 
     else:
         model = load_model()
