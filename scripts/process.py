@@ -16,8 +16,17 @@ from utilities import *
 origin = "1970-01-01T00:00:00"
 origin_datetime = datetime.fromisoformat(origin)
 
+# Calculate the total hour of the timestamp since 1970/01/01
+def get_total_hours(timestamp):
+    return int((datetime.fromisoformat(timestamp)-origin_datetime).total_seconds() / 3600)
 
-# Remove rows with missing values
+# Returns a datetime object from total hours since 1970/01/01
+def hours_to_datetime(hours):
+    return origin_datetime + timedelta(hours=hours)
+
+
+# when interpolate == False: Remove rows with missing values (training data)
+# when interpolate == True: Interpolate missing data (window data)
 def filter_nas(data, interpolate=False):
     if interpolate:
         data.interpolate(inplace=True)
@@ -28,6 +37,7 @@ def filter_nas(data, interpolate=False):
 
 
 # Normalise NO2 between 0 and 1
+# Might not be working as desired
 def normalise_values(data):
     minimum = data["NO2"].min()
     maximum = data["NO2"].max()
@@ -54,8 +64,8 @@ def format_time(data):
     #print(data)
     return data
 
-def hours_to_datetime(hours):
-    return origin_datetime + timedelta(hours=hours)
+
+
 
 # Save the total hours of each date/time as a new column
 def calculate_timestamp(data):
@@ -67,14 +77,7 @@ def calculate_timestamp(data):
     return data
 
 
-
-# Calculate the total hour of the timestamp since 1970/01/01
-def get_total_hours(timestamp):
-    return int((datetime.fromisoformat(timestamp)-origin_datetime).total_seconds() / 3600)
-
-
-
-
+# DEPRECATED
 # Transform the dataframe so that the data is grouped entry (in time) / Very slow
 def merge_entries(data, is_one_station = True):
     columns = ["time"]
@@ -107,7 +110,7 @@ def merge_entries(data, is_one_station = True):
         return merged, unique_stations
 
 
-
+# Creates new dataframes for the data of each station
 def df_by_station(data):
     stations = data["nom_estacio"].unique()
     for station in stations:
@@ -117,8 +120,8 @@ def df_by_station(data):
         station_data.to_csv(station_path, index=False)
 
 
-
 # Process the data to a useful format either from a pd.Dataframe object or from a path
+# For training data:
 def process_data(data, name = "d", as_path=False, force= False):
     print("\nProcessing data...")
     if as_path:
@@ -139,8 +142,8 @@ def process_data(data, name = "d", as_path=False, force= False):
     print("Processed {} stations".format(len(data.columns.unique())))
 
 
-
 # Process the data to a useful format either from a pd.Dataframe object or from a path
+# For window data (interpolates missing data)
 def process_window(array, normalise = True):
     #print("\nProcessing data...")
     os.makedirs("../data/window", exist_ok=True)
@@ -165,6 +168,7 @@ def process_window(array, normalise = True):
     #data.to_csv("../data/window/processed.csv", index=False)
     #print("Processed {} stations".format(len(data.columns.unique())))
     return data, minimum, maximum
+
 
 # For testing:
 if __name__ == '__main__':
