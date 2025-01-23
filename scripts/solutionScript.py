@@ -4,12 +4,11 @@ import pandas as pd
 import numpy as np
 
 
-
 # Other scripts
 from process import process_data, process_window
-from dataload import create_dataloaders, week_to_X
+from dataload import create_dataloaders, week_to_X, ToTensor
 from model import customModel
-from train import train
+from train import train, save_model, load_model
 
 
 ##### Our solution #####
@@ -19,18 +18,38 @@ from train import train
 
 # Our predict function
 
+n = 0
+def predict(windowData, force_train=False, force_process=False):
+    global n
+    print(n,"/ ", end="")
+    if not os.path.exists("../model/model.pth") or force_train:
+        process_data("../data/trainData.csv", as_path=True, force=force_process)
+        dataloaders = create_dataloaders()
+        model = customModel()
+        train(dataloaders, model)
+        save_model(model)
 
-def predict(windowData, force_train=False):
-    process_data("../data/trainData.csv", as_path=True, force=False)
-    dataloaders = create_dataloaders()
-    model = customModel()
-    train(dataloaders, model)
-    window = process_window(windowData)
-    window_X = week_to_X(window)
+    else:
+        model = load_model()
+
+
+    model.eval()
+    print("windowDara:",windowData)
+    windowData = process_window(windowData)
+    print(windowData)
+    threshold = max(windowData['timestamp'].values)-1
+    window_X = week_to_X(windowData, threshold, transform=ToTensor())
+    #print("Input:")
+    #print(window_X)
+    #print(window_X.shape)
     pred = model(window_X)
-    print(pred)
+    #print("Prediction:")
+    #print(pred)
+    #print(pred.shape)
+    n+=1
+    return pred.tolist()
 
 # For testing:
 if __name__ == "__main__":
-    windowData = pd.read_csv("../validationData.csv")
-    predict(windowData)
+    windowData = pd.read_csv("../scripts/validationData.csv")
+    predict(windowData[0:168], force_train = False, force_process=False)

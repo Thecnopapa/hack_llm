@@ -18,29 +18,38 @@ origin_datetime = datetime.fromisoformat(origin)
 
 
 # Remove rows with missing values
-def filter_nas(data):
-    data["has_null"] = data.isnull().any(axis=1)
-    data = data[data["has_null"] == False]
+def filter_nas(data, interpolate=False):
+    if interpolate:
+        data.interpolate(inplace=True)
+    else:
+        data["has_null"] = data.isnull().any(axis=1)
+        data = data[data["has_null"] == False]
     return data
 
 
 # Normalise NO2 between 0 and 1
 def normalise(data):
     data["NO2"] = data["NO2"] /data["NO2"].abs().max()
-    return data
+    return data, max(data["NO2"])
 
 
 # Add a leading 0 to the hour when necessary and convert to string
 def hour_add_0(row):
-    hour = row["hour"]-1
+    print(row)
+    if "hora" in row:
+        hour = row["hora"]-1
+    else:
+        hour = row["hour"]-1
     row["hour"] = "{}{}".format( len(str(hour)) == 1 and '0' or '', hour)
     return row
 
 
 # Merge the date and hour into a single string on a new column
 def format_time(data):
+    print(data)
     data = data.apply(hour_add_0, axis=1)
     data["time"] = data.data + "T" + data.hour + ":00:00"
+    print(data)
     return data
 
 def hours_to_datetime(hours):
@@ -119,7 +128,7 @@ def process_data(data, name = "d", as_path=False, force= False):
         print(station)
         if not os.path.exists("../data/processed/{}".format(station)) or force:
             station_df = pd.read_csv("../data/stations/{}".format(station))
-            station_df = normalise(station_df)
+            station_df = normalise(station_df)[0]
             station_df = format_time(station_df)
             station_df = calculate_timestamp(station_df)
             station_df = station_df[["timestamp", "NO2", "month", "day", "hour"]]
@@ -130,22 +139,30 @@ def process_data(data, name = "d", as_path=False, force= False):
 
 
 # Process the data to a useful format either from a pd.Dataframe object or from a path
-def process_window(data):
-    print("\nProcessing data...")
+def process_window(array):
+    #print("\nProcessing data...")
     os.makedirs("../data/window", exist_ok=True)
+    #print(array)
+    data = pd.DataFrame(array, columns=["data", "hour", "NO2"])
+    #data["hora"] = pd.to_numeric(data["hora"])
+    data["NO2"] = pd.to_numeric(data["NO2"])
+    print(data.dtypes)
+
+    #print(data)
     data.to_csv("../data/window/original.csv", index=False)
-    data = filter_nas(data)
-    data.to_csv("../data/window/window.csv", index=False)
-    data = normalise(data)
+    data = filter_nas(data, interpolate=True)
+    #data.to_csv("../data/window/window.csv", index=False)
+    data, max= normalise(data)
     data = format_time(data)
     data = calculate_timestamp(data)
     data = data[["timestamp", "NO2", "month", "day", "hour"]]
-    data.to_csv("../data/window/processed.csv", index=False)
-    print("Processed {} stations".format(len(data.columns.unique())))
+    #data.to_csv("../data/window/processed.csv", index=False)
+    #print("Processed {} stations".format(len(data.columns.unique())))
+    return data
 
 # For testing:
 if __name__ == '__main__':
-    process_data("../data/trainData.csv", as_path=True, force=True)
+    process_data("../data/trainData.csv", as_path=True, force=False)
 
 
 

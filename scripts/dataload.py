@@ -126,7 +126,7 @@ def day_to_y(day, threshold, transform = None):
 class customDataLoader():
     def __init__(self, df, transform=None, name="dataset", is_train = True):
         self.name = name
-        print("\n",self.name, self)
+        #print("\n",self.name, self)
         self.transform = transform
         self.df = df.sort_values("timestamp", ascending=True)
         self.length = len(self.df)
@@ -135,9 +135,9 @@ class customDataLoader():
         self.days = self.len = int((self.end-self.start)//24)
         self.weeks = int(self.days//7)
         self.shift = 0
-        print(" - number of days:", self.days)
-        print(" - number of weeks:", self.weeks)
-        print(" - range:", self.start, self.end)
+        #print(" - number of days:", self.days)
+        #print(" - number of weeks:", self.weeks)
+        #print(" - range:", self.start, self.end)
 
         self.missing_data = 0
         self.complete_data = 0
@@ -153,8 +153,8 @@ class customDataLoader():
             else:
                 self.complete_data += 1
             print(i, end="\r")
-        print(" - missing data:", self.missing_data)
-        print(" - complete data:", self.complete_data)
+        #print(" - missing data:", self.missing_data)
+        #print(" - complete data:", self.complete_data)
         self.len = self.complete_data
 
 
@@ -197,7 +197,7 @@ def create_dataloaders():
 # For testing:
 if __name__ == '__main__':
 
-    create_dataloaders()
+    dataloaders = create_dataloaders()
 
 
 

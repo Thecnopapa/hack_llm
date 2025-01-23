@@ -51,8 +51,22 @@ def train(dataloaders, model, iterations=5):
 
                 progress.add()
                 if batch % 100 == 0:
-                    loss, current = loss.item(), (batch + 1) * len(X)
-                    print(f"loss: {loss:>7f}  [{current:>5d}/{len(dataloader):>5d}]")
+                    print(f"loss: {loss.item():>7f}  [{batch:>5d}/{len(dataloader):>5d}]")
+
+
+def save_model(model):
+    print("Saving trained model")
+    model_path = os.path.join("../model/model.pth")
+    state_path = os.path.join("../model/state.pth")
+    os.makedirs(os.path.dirname(model_path), exist_ok=True)
+    torch.save(model, model_path)
+    torch.save(model.state_dict(), state_path)
+    #print("Saved PyTorch Model State {}".format(model_path))
+
+def load_model(model_path="../model/model.pth"):
+    #print("Loading model")
+    model = torch.load(model_path)
+    return model
 
 
 
@@ -72,9 +86,6 @@ def train_old(dataset, model, loss_fn, optimizer):
         optimizer.step()
         optimizer.zero_grad()
 
-        if batch % 100 == 0:
-            loss, current = loss.item(), (batch + 1) * len(X)
-            #print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
         progress.add()
 
 
