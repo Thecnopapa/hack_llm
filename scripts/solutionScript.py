@@ -30,10 +30,8 @@ def predict(windowData, force_train=False, force_process=False):
         process_data("../data/trainData.csv", as_path=True, force=force_process)
         dataloaders = create_dataloaders()
         model = TinyModel(24)
-        iterations = 1
+        iterations = 5 # Up to 9 should be fine
         trainTinyModel(dataloaders, model, iterations=iterations)
-
-
     else:
         model = load_model()
 

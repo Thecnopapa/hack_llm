@@ -30,57 +30,6 @@ class TinyModel(torch.nn.Module):
         #print("output:", x)
         return x
 
-class customModel(torch.nn.Module):
-
-    def __init__(self):
-        super().__init__()
-
-        self.linear1 = torch.nn.Linear(168, 168)
-        self.activation = torch.nn.ReLU()
-        self.linear2 = torch.nn.Linear(168, 24)
-        self.softmax = torch.nn.Softmax()
-
-
-class Sequence(nn.Module):
-    def __init__(self):
-        super(Sequence, self).__init__()
-        self.lstm1 = nn.LSTMCell(168, 168*7)
-        self.activation = torch.nn.ReLU()
-        self.lstm2 = nn.LSTMCell(168*7, 168)
-        self.linear = nn.Linear(168, 24)
-
-    def forward2(self, input, future = 0):
-        outputs = []
-        h_t = torch.zeros(input.size(0), 168, dtype=torch.double)
-        c_t = torch.zeros(input.size(0), 168, dtype=torch.double)
-        h_t2 = torch.zeros(input.size(0), 168, dtype=torch.double)
-        c_t2 = torch.zeros(input.size(0), 168, dtype=torch.double)
-
-        for input_t in input.split(1, dim=1):
-            print(input_t)
-            print(input_t.dtype)
-            print(h_t, c_t)
-            print(h_t.si, c_t.dtype)
-            h_t, c_t = self.lstm1(input_t, (h_t, c_t))
-            h_t2, c_t2 = self.lstm2(h_t, (h_t2, c_t2))
-            output = self.linear(h_t2)
-            outputs += [output]
-        for i in range(future):# if we should predict the future
-            h_t, c_t = self.lstm1(output, (h_t, c_t))
-            h_t2, c_t2 = self.lstm2(h_t, (h_t2, c_t2))
-            output = self.linear(h_t2)
-            outputs += [output]
-        outputs = torch.cat(outputs, dim=1)
-        return outputs
-
-    def forward(self, hx, ch):
-        print("input:", x)
-        h, c = self.lstm1(x, (h,c))
-        h2, c2 = self.lstm2(x)
-        x = self.linear(x)
-        #print("output:", x)
-        return x
-
 
 
 # For testing:
