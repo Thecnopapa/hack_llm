@@ -1,5 +1,8 @@
 # hack_llm
 
+
+by Iain, Claudia, and Dani
+
 >This is our solution to the problem.
 To predict:
 - training data should be located in /data/trainData.csv
