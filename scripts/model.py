@@ -2,7 +2,6 @@
 
 # Pytorch-related
 import torch
-from torchsummary import summary
 import torch.nn as nn
 
 
