@@ -75,7 +75,7 @@ def trainTinyModel(dataloaders, model, iterations=5):
 
                 optimizer.step(closure)
                 progress.add()
-        save_model(model, path="../models/model_{}.pth".format(iteration))
+        save_model(model,model_path="../models/model_{}.pth".format(iteration))
 
 
 

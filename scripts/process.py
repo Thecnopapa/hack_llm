@@ -28,14 +28,16 @@ def filter_nas(data, interpolate=False):
 
 
 # Normalise NO2 between 0 and 1
-def normalise(data):
+def normalise_values(data):
+    minimum = data["NO2"].min()
+    maximum = data["NO2"].max()
     data["NO2"] = data["NO2"] /data["NO2"].abs().max()
-    return data, min(data["NO2"]), max(data["NO2"])
+    return data, minimum, maximum
 
 
 # Add a leading 0 to the hour when necessary and convert to string
 def hour_add_0(row):
-    print(row)
+    #print(row)
     if "hora" in row:
         hour = row["hora"]-1
     else:
@@ -128,7 +130,7 @@ def process_data(data, name = "d", as_path=False, force= False):
         print(station)
         if not os.path.exists("../data/processed/{}".format(station)) or force:
             station_df = pd.read_csv("../data/stations/{}".format(station))
-            station_df = normalise(station_df)[0]
+            station_df = normalise_values(station_df)[0]
             station_df = format_time(station_df)
             station_df = calculate_timestamp(station_df)
             station_df = station_df[["timestamp", "NO2", "month", "day", "hour"]]
@@ -153,15 +155,16 @@ def process_window(array, normalise = True):
     data = filter_nas(data, interpolate=True)
     #data.to_csv("../data/window/window.csv", index=False)
     if normalise:
-        data, min, max = normalise(data)
-    else: min = max = None
+        data, minimum, maximum = normalise_values(data)
+    else:
+        minimum = maximum = None
 
     data = format_time(data)
     data = calculate_timestamp(data)
     data = data[["timestamp", "NO2", "month", "day", "hour"]]
     #data.to_csv("../data/window/processed.csv", index=False)
     #print("Processed {} stations".format(len(data.columns.unique())))
-    return data, min, max
+    return data, minimum, maximum
 
 # For testing:
 if __name__ == '__main__':

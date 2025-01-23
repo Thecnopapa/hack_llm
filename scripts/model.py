@@ -14,9 +14,10 @@ class TinyModel(torch.nn.Module):
     def __init__(self, output_dim):
         super(TinyModel, self).__init__()
 
-        self.linear1 = torch.nn.Linear(168, 168*7)
+        self.linear1 = torch.nn.Linear(168, 168)
+        self.lstm1 = nn.LSTMCell(168, 168 * 7)
         self.activation = torch.nn.ReLU()
-        self.linear2 = torch.nn.Linear(168*7, 24)
+        self.linear2 = torch.nn.Linear(168, 24)
 
         self.softmax = torch.nn.Softmax()
 
@@ -34,9 +35,9 @@ class TinyModel(torch.nn.Module):
 # For testing:
 if __name__ == '__main__':
 
-    model = Sequence()
+    model = TinyModel(24)
     #summary(models, ([168]))
-    x = torch.rand(2,168)
+    x = torch.rand(168)
     print("input:", x)
     print("dtype:", x)
     output = model(x)

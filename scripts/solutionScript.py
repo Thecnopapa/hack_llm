@@ -38,8 +38,9 @@ def predict(windowData, force_train=False, force_process=False):
 
     model.eval()
     print("windowDara:",windowData)
-    windowData, min, max= process_window(windowData, normalise= True)
+    windowData, minimum, maximum= process_window(windowData, normalise= True)
     print(windowData)
+    print(minimum, maximum)
     threshold = max(windowData['timestamp'].values)-1
     window_X = week_to_X(windowData, threshold, transform=ToTensor())
     print("Input:")
@@ -52,11 +53,17 @@ def predict(windowData, force_train=False, force_process=False):
     print(pred)
     print(pred.shape)
     n+=1
-    pred = (pred * (max-min)) + min
+
+    pred = pred.tolist()
+    print(pred)
+    scaled_pred = []
+    for p in pred:
+        scaled_pred.append(p* (maximum-minimum) + minimum)
     print("Rescaled:")
     print(pred)
-    print(pred.shape)
-    return pred.tolist()
+    for p in model.parameters():
+        print(p)
+    return pred
 
 # For testing:
 if __name__ == "__main__":
