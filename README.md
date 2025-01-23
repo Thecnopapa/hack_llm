@@ -13,6 +13,13 @@ To predict:
     - replace **predict(windowToPredict)**
     - to **predict(windowToPredict, simple=False)** to see our model (not) work
 
+The requirements (also in requirements.txt) should be only:
+- python=3.12 (other versions might work)
+- numpy=2 (other versions might work)
+- torch
+- torchvision
+- pandas
+
 
 Apologies if not all the code is not well commented or you see weird stuff.
 
@@ -25,4 +32,4 @@ The scripts containing our implemented code are:
 - scripts/model.py (contains our model)
 - scripts/train (stuff to train the model)
 
-Everything else is mostly debris
+Everything else is mostly debris.
