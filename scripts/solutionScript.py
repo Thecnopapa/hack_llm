@@ -25,12 +25,14 @@ n = 0
 def predict(windowData, force_train=False, force_process=False):
     global n
     print(n,"/ ", end="")
-    if not os.path.exists("../model/model.pth") or force_train:
+    os.makedirs("../models", exist_ok=True)
+    if len(os.listdir("../models")) == 0 or force_train:
         process_data("../data/trainData.csv", as_path=True, force=force_process)
         dataloaders = create_dataloaders()
         model = TinyModel(24)
-        trainTinyModel(dataloaders, model)
-        save_model(model)
+        iterations = 1
+        trainTinyModel(dataloaders, model, iterations=iterations)
+        save_model(model, path="../models/model_{}.pth".format(iterations))
 
     else:
         model = load_model()
@@ -38,7 +40,7 @@ def predict(windowData, force_train=False, force_process=False):
 
     model.eval()
     print("windowDara:",windowData)
-    windowData, min, max= process_window(windowData)
+    windowData, min, max= process_window(windowData, normalise= True)
     print(windowData)
     threshold = max(windowData['timestamp'].values)-1
     window_X = week_to_X(windowData, threshold, transform=ToTensor())
@@ -53,6 +55,9 @@ def predict(windowData, force_train=False, force_process=False):
     print(pred.shape)
     n+=1
     pred = (pred * (max-min)) + min
+    print("Rescaled:")
+    print(pred)
+    print(pred.shape)
     return pred.tolist()
 
 # For testing:

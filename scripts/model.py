@@ -6,10 +6,10 @@ from torchsummary import summary
 import torch.nn as nn
 
 
-##### Our model #####
+##### Our models #####
 
 
-# Class with the model used
+# Class with the models used
 class TinyModel(torch.nn.Module):
 
     def __init__(self, output_dim):
@@ -87,7 +87,7 @@ class Sequence(nn.Module):
 if __name__ == '__main__':
 
     model = Sequence()
-    #summary(model, ([168]))
+    #summary(models, ([168]))
     x = torch.rand(2,168)
     print("input:", x)
     print("dtype:", x)

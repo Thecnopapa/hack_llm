@@ -10,17 +10,17 @@ import torch.nn as nn
 from utilities import  *
 
 
-def save_model(model):
-    print("Saving trained model")
-    model_path = os.path.join("../model/model.pth")
-    state_path = os.path.join("../model/state.pth")
+def save_model(model, model_path = "../models/models.pth"):
+    print("Saving trained models")
     os.makedirs(os.path.dirname(model_path), exist_ok=True)
     torch.save(model, model_path)
-    torch.save(model.state_dict(), state_path)
-    #print("Saved PyTorch Model State {}".format(model_path))
+    print("Saved PyTorch Model State {}".format(model_path))
 
-def load_model(model_path="../model/model.pth"):
-    #print("Loading model")
+def load_model(model_path="../models/models.pth"):
+    models = os.listdir("../models")
+    highest_model = (sorted(models))[-1]
+    print("Loading models:", highest_model)
+    model_path = os.path.join("../models", highest_model)
     model = torch.load(model_path)
     return model
 
@@ -47,7 +47,7 @@ def test(dataloader, model):
 def trainTinyModel(dataloaders, model, iterations=5):
     loss_fn = torch.nn.CrossEntropyLoss()
     criterion = nn.MSELoss()
-    #optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)
+    #optimizer = torch.optim.SGD(models.parameters(), lr=1e-3)
     optimizer = torch.optim.LBFGS(model.parameters(), lr=0.8)
     for iteration in range(iterations):
         print(f">> Training iteration: {iteration}")
@@ -123,9 +123,9 @@ def trainModel(dataloader, model):
         print(f"Epoch {t + 1}\n-------------------------------")
         train(dataloader, model, loss_fn, optimizer)
 
-    print("Saving trained model")
-    model_path = os.path.join("../model/model.pth")
-    state_path = os.path.join("../model/state.pth")
+    print("Saving trained models")
+    model_path = os.path.join("../models/models.pth")
+    state_path = os.path.join("../models/state.pth")
     os.makedirs(os.path.dirname(model_path), exist_ok=True)
     torch.save(model, model_path)
     torch.save(model.state_dict(), state_path)

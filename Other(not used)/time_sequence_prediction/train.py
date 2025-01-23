@@ -49,7 +49,7 @@ if __name__ == '__main__':
     target = torch.from_numpy(data[3:, 1:])
     test_input = torch.from_numpy(data[:3, :-1])
     test_target = torch.from_numpy(data[:3, 1:])
-    # build the model
+    # build the models
     seq = Sequence()
     seq.double()
     criterion = nn.MSELoss()

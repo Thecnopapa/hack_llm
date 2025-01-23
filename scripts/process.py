@@ -139,7 +139,7 @@ def process_data(data, name = "d", as_path=False, force= False):
 
 
 # Process the data to a useful format either from a pd.Dataframe object or from a path
-def process_window(array):
+def process_window(array, normalise = True):
     #print("\nProcessing data...")
     os.makedirs("../data/window", exist_ok=True)
     #print(array)
@@ -152,7 +152,10 @@ def process_window(array):
     data.to_csv("../data/window/original.csv", index=False)
     data = filter_nas(data, interpolate=True)
     #data.to_csv("../data/window/window.csv", index=False)
-    data, min, max = normalise(data)
+    if normalise:
+        data, min, max = normalise(data)
+    else: min = max = None
+
     data = format_time(data)
     data = calculate_timestamp(data)
     data = data[["timestamp", "NO2", "month", "day", "hour"]]

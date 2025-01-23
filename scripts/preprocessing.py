@@ -30,13 +30,13 @@ print(data.head()) #Used for debbuging, made to DELETE later
 def createWindow(data, window_size=168, prediction_size=24):
     wind, pred = [], [] #wind as in window and pred as in prediction
     for i in range(len(data) - window_size - prediction_size): #We take off this sizes from the legth of the data to asure we are not trying to access data that doesn't exist
-        wind.append(data[i:i+window_size]) #has the input windows for the model
+        wind.append(data[i:i+window_size]) #has the input windows for the models
         pred.append(data[i+window_size:i+window_size+prediction_size]) #has the prediction correscponding to each window
     return np.array(wind), np.array(pred)
 
 wind_train, pred_train = createWindow(data['NO2'].values) #Here we use to function with the NO2 data
 
-#Here we will escalate the data to asure the model is not influenced by high magnitudes
+#Here we will escalate the data to asure the models is not influenced by high magnitudes
 
 scaler = MinMaxScaler()
 wind_train = scaler.fit_transform(wind_train.reshape(-1, 1)).reshape(wind_train.shape)
@@ -51,7 +51,7 @@ print("pred_train shape:", pred_train.shape)
 print("NaN a wind_train:", np.isnan(wind_train).sum())
 print("NaN a pred_train:", np.isnan(pred_train).sum())
 
-#Whenever we validate the model we will have to use the same preprocessing, here written:
+#Whenever we validate the models we will have to use the same preprocessing, here written:
 
 #val_data = pd.read_csv('validationData.csv') 
 #scaler = joblib.load('scaler.pk1')

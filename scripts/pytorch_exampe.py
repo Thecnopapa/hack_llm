@@ -43,7 +43,7 @@ device = (
 )
 print(f"Using {device} device")
 
-# Define model
+# Define models
 class NeuralNetwork(nn.Module):
     def __init__(self):
         super().__init__()
@@ -111,12 +111,12 @@ for t in range(epochs):
 print("Done!")
 
 
-torch.save(model.state_dict(), "model.pth")
-print("Saved PyTorch Model State to model.pth")
+torch.save(model.state_dict(), "models.pth")
+print("Saved PyTorch Model State to models.pth")
 
 
 model = NeuralNetwork().to(device)
-model.load_state_dict(torch.load("model.pth", weights_only=True))
+model.load_state_dict(torch.load("models.pth", weights_only=True))
 
 
 
