@@ -1,4 +1,8 @@
 # hack_llm
 
-Preprocessament - per revisar
-Desenvolupament del model - Comença clàudia
+This is our solution to the problem.
+To predict:
+- Run testScript.py from the ../scripts/ directory (or won't find the data and other scripts)
+> Optional
+  - replace predict(windowToPredict)
+  - to predict(windowToPredict, simple=False) to see our model (not) work

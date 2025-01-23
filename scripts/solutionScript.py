@@ -22,18 +22,18 @@ from train import trainTinyModel, test, save_model, load_model
 # Our predict function
 
 n = 0
-def predict(windowData, force_train=False, force_process=False, cheat=True):
+def predict(windowData, force_train=False, force_process=False, simple=True):
     global n
     print(n, end="\r")
 
     os.makedirs("../models", exist_ok=True) # Creates model folder if it does not exist
-    if (len(os.listdir("../models")) == 0 or force_train) and not cheat: # Checks whether there are any tarined models saved
+    if (len(os.listdir("../models")) == 0 or force_train) and not simple: # Checks whether there are any tarined models saved
         process_data("../data/trainData.csv", as_path=True, force=force_process) # Process data for training
         dataloaders = create_dataloaders() # Generate dataloaders for the data
         model = TinyModel(24) # Initialise the model
         iterations = 5 # Up to 9 should be fine
         trainTinyModel(dataloaders, model, iterations=iterations) # Train the model
-    elif not cheat:
+    elif not simple:
         model = load_model() # If there are saved models, load the most trained one
 
 
@@ -45,7 +45,7 @@ def predict(windowData, force_train=False, force_process=False, cheat=True):
     # Because the model does not work so far this simple prediction is left as palceholder
     # Note: it performs poorly (RMSE 43.8 on validation data)
 
-    if cheat:
+    if simple:
         data =  windowData
         pred = []
         for hour in data["hour"].unique():
