@@ -6,3 +6,6 @@ To predict:
 > Optional
   - replace predict(windowToPredict)
   - to predict(windowToPredict, simple=False) to see our model (not) work
+
+
+Apologies if not all the code is not well commented or you see weird stuff.
