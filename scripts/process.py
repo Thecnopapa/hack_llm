@@ -2,7 +2,7 @@
 import os
 import pandas as pd
 import numpy as np
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Other scripts
 from utilities import *
@@ -43,30 +43,25 @@ def format_time(data):
     data["time"] = data.data + "T" + data.hour + ":00:00"
     return data
 
+def hours_to_datetime(hours):
+    return origin_datetime + timedelta(hours=hours)
 
 # Save the total hours of each date/time as a new column
 def calculate_timestamp(data):
     #time = datetime.fromisoformat(time)
     data["timestamp"] = data["time"].apply(lambda x: get_total_hours(x))
+    data["month"] = data["timestamp"].apply(lambda x: hours_to_datetime(x).month)
+    data["day"] = data["timestamp"].apply(lambda x: hours_to_datetime(x).day)
+    data["hour"] = data["timestamp"].apply(lambda x: hours_to_datetime(x).hour)
     return data
+
 
 
 # Calculate the total hour of the timestamp since 1970/01/01
 def get_total_hours(timestamp):
-    return (datetime.fromisoformat(timestamp)-origin_datetime).total_seconds() / 3600
+    return int((datetime.fromisoformat(timestamp)-origin_datetime).total_seconds() / 3600)
 
 
-# Return 2 datasets:  1 week before a defined date/time & 24h after the same date/time
-def get_window(data, time):
-    hours = get_total_hours(time)
-    one_week_less = hours - 168
-    one_day_more = hours + 24
-    print(one_week_less, one_day_more)
-    week = data[data["timestamp"] <=hours]
-    week =  week[week["timestamp"] >= one_week_less]
-    day = data[data["timestamp"] > hours ]
-    day = day[day["timestamp"] <= one_day_more]
-    return  week, day
 
 
 # Transform the dataframe so that the data is grouped entry (in time) / Very slow
@@ -100,64 +95,41 @@ def merge_entries(data, is_one_station = True):
     else:
         return merged, unique_stations
 
+
+
 def df_by_station(data):
     stations = data["nom_estacio"].unique()
-    dataframes = []
     for station in stations:
         station_data = data[data["nom_estacio"] == station]
-        station_path = "../data/stations/station_{}.csv".format(station)
+        station_path = "../data/stations/{}.csv".format(station)
+        os.makedirs(os.path.dirname(station_path), exist_ok=True)
         station_data.to_csv(station_path, index=False)
 
 
 
-
-
 # Process the data to a useful format either from a pd.Dataframe object or from a path
-def process_data(data, name = "d", as_path=False):
+def process_data(data, name = "d", as_path=False, force= False):
+    print("\nProcessing data...")
     if as_path:
         data = pd.read_csv(data, na_values=np.nan, dtype={"NO2": float, "data": str})
     data = filter_nas(data)
     df_by_station(data)
 
-    for station_df in os.listdir("../data/stations"):
-
-
-
-    data = normalise(data)
-    data = format_time(data)
-    data, stations = merge_entries(data)
-    data = calculate_timestamp(data)
-    data.to_csv("../data/{}_processed.csv".format(name), index=False)
-    return data, stations
-
+    for station in os.listdir("../data/stations"):
+        print(station)
+        if not os.path.exists("../data/processed/{}".format(station)) or force:
+            station_df = pd.read_csv("../data/stations/{}".format(station))
+            station_df = normalise(station_df)
+            station_df = format_time(station_df)
+            station_df = calculate_timestamp(station_df)
+            station_df = station_df[["timestamp", "NO2", "month", "day", "hour"]]
+            os.makedirs("../data/processed", exist_ok=True)
+            station_df.to_csv("../data/processed/{}".format(station), index=False)
+    print("Processed {} stations".format(len(data.columns.unique())))
 
 # For testing:
 if __name__ == '__main__':
-    data = filter_nas("../data/trainData.csv")
-    data = normalise(data)
-    print(data)
+    process_data("../data/trainData.csv", as_path=True, force=True)
 
-    data = format_time(data)
-    print(data)
-
-    data, stations = merge_entries(data)
-    print(data)
-    data.to_csv("../data/mergedData.csv")
-
-    data = pd.read_csv("../data/mergedData.csv", index_col=0)
-    data = calculate_timestamp(data)
-    print(data)
-
-    data.to_csv("../data/processedData.csv")
-
-
-
-
-
-    example_week, example_day= get_window(data, "2017-06-03T00:00:00")
-    example_week.to_csv("../data/exampleWeek.csv")
-    example_day.to_csv("../data/exampleDay.csv")
-    print(example_week)
-    print(example_day)
 
 

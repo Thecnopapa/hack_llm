@@ -34,9 +34,9 @@ class MeanModel(torch.nn.Module):
     def __init__(self):
         super(TinyModel, self).__init__()
 
-        self.linear1 = torch.nn.Linear(9, 100)
+        self.linear1 = torch.nn.Linear(168*2, 100)
         self.activation = torch.nn.ReLU()
-        self.linear2 = torch.nn.Linear(100, 1)
+        self.linear2 = torch.nn.Linear(100, 24)
         self.softmax = torch.nn.Softmax()
 
     def forward(self, x):

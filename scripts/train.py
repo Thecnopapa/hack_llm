@@ -28,12 +28,35 @@ def test(dataloader, model):
 
 
 
+def train(dataloaders, model, iterations=5):
+    loss_fn = torch.nn.CrossEntropyLoss()
+    optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)
+    for iteration in range(iterations):
+        print(f">> Training iteration: {iteration}")
+        for dataloader in dataloaders:
+            print(f">> Dataloader: {dataloader.name}")
+            progress = ProgressBar(len(dataloader))
+            for batch in dataloader:
+                X, y = batch
+                # Compute prediction error
+                pred = model(X)
+                loss = loss_fn(pred, y)
+
+                # Backpropagation
+                loss.backward()
+                optimizer.step()
+                optimizer.zero_grad()
+
+                if batch % 100 == 0:
+                    loss, current = loss.item(), (batch + 1) * len(X)
+                    # print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+                progress.add()
 
 
-
-def train(dataloader, model, loss_fn, optimizer):
+def train(dataset, model, loss_fn, optimizer):
     model.train()
     progress = ProgressBar(len(dataloader))
+
     for batch, sample in enumerate(dataloader):
         X, y = sample["time"], sample["values"]
 
