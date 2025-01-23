@@ -30,7 +30,7 @@ def filter_nas(data, interpolate=False):
 # Normalise NO2 between 0 and 1
 def normalise(data):
     data["NO2"] = data["NO2"] /data["NO2"].abs().max()
-    return data, max(data["NO2"])
+    return data, min(data["NO2"]), max(data["NO2"])
 
 
 # Add a leading 0 to the hour when necessary and convert to string
@@ -152,13 +152,13 @@ def process_window(array):
     data.to_csv("../data/window/original.csv", index=False)
     data = filter_nas(data, interpolate=True)
     #data.to_csv("../data/window/window.csv", index=False)
-    data, max= normalise(data)
+    data, min, max = normalise(data)
     data = format_time(data)
     data = calculate_timestamp(data)
     data = data[["timestamp", "NO2", "month", "day", "hour"]]
     #data.to_csv("../data/window/processed.csv", index=False)
     #print("Processed {} stations".format(len(data.columns.unique())))
-    return data
+    return data, min, max
 
 # For testing:
 if __name__ == '__main__':
