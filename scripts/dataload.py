@@ -115,7 +115,9 @@ def week_to_X(week, threshold, transform = None):
     return array
 
 def day_to_y(day, threshold, transform = None):
-    array = np.array(day["NO2"].values - threshold, dtype=np.float32).reshape(1,24)
+    timestamps = np.array(threshold + day["timestamp"].values)
+    values = np.array(threshold - day["NO2"].values)
+    array = np.array([timestamps,values], dtype=np.float32)
     if transform is not None:
         array = transform(array)
     return array
@@ -124,7 +126,7 @@ def day_to_y(day, threshold, transform = None):
 class customDataLoader():
     def __init__(self, df, transform=None, name="dataset"):
         self.name = name
-        print(self.name, self)
+        print("\n",self.name, self)
         self.transform = transform
         self.df = df.sort_values("timestamp", ascending=True)
         self.length = len(self.df)
@@ -173,7 +175,7 @@ class customDataLoader():
 
     def __iter__(self):
         for i in range(len(self)):
-            yield self[i]
+            yield i, self[i]
         self.shift = 0
 
 
