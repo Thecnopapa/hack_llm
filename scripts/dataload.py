@@ -72,7 +72,7 @@ class PollutionDataset(Dataset):
 
 class ToTensor(object):
     def __call__(self, array):
-        return torch.from_numpy(array).float()
+        return torch.from_numpy(array).to(torch.float)
         #for key in sample.keys():
         #    sample[key] = torch.from_numpy(sample[key])
         #return sample
@@ -107,17 +107,19 @@ def get_window(data, hours):
 
 
 def week_to_X(week, threshold, transform = None):
-    timestamps = np.array(threshold - week["timestamp"].values)
-    values = np.array(threshold - week["NO2"].values)
-    array = np.array([timestamps,values], dtype=np.float32)
+    #timestamps = np.array(threshold - week["timestamp"].values)
+    values = np.array(week["NO2"].values)
+    #array = np.array([timestamps,values], dtype=np.float64)
+    array = values
     if transform is not None:
         array = transform(array)
     return array
 
 def day_to_y(day, threshold, transform = None):
-    timestamps = np.array(threshold + day["timestamp"].values)
-    values = np.array(threshold - day["NO2"].values)
-    array = np.array([timestamps,values], dtype=np.float32)
+    #timestamps = np.array(threshold + day["timestamp"].values)
+    values = np.array(day["NO2"].values)
+    #array = np.array([timestamps,values], dtype=np.float64)
+    array = values
     if transform is not None:
         array = transform(array)
     return array

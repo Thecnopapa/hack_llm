@@ -3,6 +3,7 @@
 # Pytorch-related
 import torch
 from torchsummary import summary
+import torch.nn as nn
 
 
 ##### Our model #####
@@ -14,9 +15,9 @@ class TinyModel(torch.nn.Module):
     def __init__(self, output_dim):
         super(TinyModel, self).__init__()
 
-        self.linear1 = torch.nn.Linear(9, 100)
+        self.linear1 = torch.nn.Linear(168, 168*7)
         self.activation = torch.nn.ReLU()
-        self.linear2 = torch.nn.Linear(100, output_dim)
+        self.linear2 = torch.nn.Linear(168*7, 24)
 
         self.softmax = torch.nn.Softmax()
 
@@ -25,7 +26,7 @@ class TinyModel(torch.nn.Module):
         x = self.linear1(x)
         x = self.activation(x)
         x = self.linear2(x)
-        x = self.softmax(x)
+        #x = self.softmax(x)
         #print("output:", x)
         return x
 
@@ -39,30 +40,27 @@ class customModel(torch.nn.Module):
         self.linear2 = torch.nn.Linear(168, 24)
         self.softmax = torch.nn.Softmax()
 
-    def forward(self, x):
-        #print("input:", x)
-        x = self.linear1(x)
-        x = self.activation(x)
-        x = self.linear2(x)
-        x = self.softmax(x)
-        #print("output:", x)
-        return x
 
 class Sequence(nn.Module):
     def __init__(self):
         super(Sequence, self).__init__()
-        self.lstm1 = nn.LSTMCell(1, 51)
-        self.lstm2 = nn.LSTMCell(51, 51)
-        self.linear = nn.Linear(51, 1)
+        self.lstm1 = nn.LSTMCell(168, 168*7)
+        self.activation = torch.nn.ReLU()
+        self.lstm2 = nn.LSTMCell(168*7, 168)
+        self.linear = nn.Linear(168, 24)
 
-    def forward(self, input, future = 0):
+    def forward2(self, input, future = 0):
         outputs = []
-        h_t = torch.zeros(input.size(0), 51, dtype=torch.double)
-        c_t = torch.zeros(input.size(0), 51, dtype=torch.double)
-        h_t2 = torch.zeros(input.size(0), 51, dtype=torch.double)
-        c_t2 = torch.zeros(input.size(0), 51, dtype=torch.double)
+        h_t = torch.zeros(input.size(0), 168, dtype=torch.double)
+        c_t = torch.zeros(input.size(0), 168, dtype=torch.double)
+        h_t2 = torch.zeros(input.size(0), 168, dtype=torch.double)
+        c_t2 = torch.zeros(input.size(0), 168, dtype=torch.double)
 
         for input_t in input.split(1, dim=1):
+            print(input_t)
+            print(input_t.dtype)
+            print(h_t, c_t)
+            print(h_t.si, c_t.dtype)
             h_t, c_t = self.lstm1(input_t, (h_t, c_t))
             h_t2, c_t2 = self.lstm2(h_t, (h_t2, c_t2))
             output = self.linear(h_t2)
@@ -75,14 +73,24 @@ class Sequence(nn.Module):
         outputs = torch.cat(outputs, dim=1)
         return outputs
 
+    def forward(self, hx, ch):
+        print("input:", x)
+        h, c = self.lstm1(x, (h,c))
+        h2, c2 = self.lstm2(x)
+        x = self.linear(x)
+        #print("output:", x)
+        return x
+
+
 
 # For testing:
 if __name__ == '__main__':
 
-    model = customModel()
-    summary(model, (1, 168))
+    model = Sequence()
+    #summary(model, ([168]))
     x = torch.rand(2,168)
     print("input:", x)
+    print("dtype:", x)
     output = model(x)
     print("output:", output)
     print("output.shape:", output.shape)
