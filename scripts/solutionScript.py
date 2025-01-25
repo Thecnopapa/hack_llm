@@ -82,4 +82,4 @@ def predict(windowData, force_train=False, force_process=False, simple=True):
 # Run this script to test a window from the validation data
 if __name__ == "__main__":
     windowData = pd.read_csv("../scripts/validationData.csv")
-    predict(windowData[0:168], force_train = False, force_process=False, cheat = True)
+    predict(windowData[0:168], force_train = True, force_process=False, simple = True)
